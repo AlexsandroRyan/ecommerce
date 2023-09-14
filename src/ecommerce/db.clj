@@ -35,3 +35,21 @@
 (defn todos-os-produtos [db]
   (d/q '[:find ?entidade
          :where [?entidade :produto/nome]] db))
+
+(defn todos-os-produtos-por-slug
+  [db slug-que-estou-procurando]
+  (d/q '[:find ?entidade
+         :in $ ?slug
+         :where [?entidade :produto/slug ?slug]]
+       db slug-que-estou-procurando))
+
+(defn todos-os-slugs [db]
+  (d/q '[:find ?slug
+         :where [?entidade :produto/slug ?slug]]
+       db))
+
+(defn todos-os-produtos-por-preco [db]
+  (d/q '[:find ?nome ?preco
+         :where [?produto :produto/preco ?preco]
+                [?produto :produto/nome ?nome]]
+       db))

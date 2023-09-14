@@ -33,7 +33,7 @@
   (d/transact conn {:tx-data schema}))
 
 (defn todos-os-produtos [db]
-  (d/q '[:find ?entidade
+  (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
          :where [?entidade :produto/nome]] db))
 
 (defn todos-os-produtos-por-slug
@@ -50,6 +50,7 @@
 
 (defn todos-os-produtos-por-preco [db]
   (d/q '[:find ?nome ?preco
+         :keys nome, preco
          :where [?produto :produto/preco ?preco]
                 [?produto :produto/nome ?nome]]
        db))

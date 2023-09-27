@@ -1,4 +1,4 @@
-(ns ecommerce.model)
+(ns curso-1-datomic.ecommerce.model)
 
 (defn novo-produto 
   [nome slug preco]

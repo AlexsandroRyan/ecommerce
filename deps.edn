@@ -1,2 +1,3 @@
 {:deps
- {com.datomic/local {:mvn/version "1.0.267"}}}
+ {com.datomic/local {:mvn/version "1.0.267"}
+  com.datomic/peer  {:mvn/version "1.0.6726"}}}

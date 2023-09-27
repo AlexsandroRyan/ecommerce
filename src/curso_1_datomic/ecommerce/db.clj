@@ -1,4 +1,4 @@
-(ns ecommerce.db
+(ns curso-1-datomic.ecommerce.db
   (:require 
    [datomic.client.api :as d]))
 

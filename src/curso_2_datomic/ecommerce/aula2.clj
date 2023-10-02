@@ -4,9 +4,9 @@
             [curso-2-datomic.ecommerce.db :as db]
             [curso-2-datomic.ecommerce.model :as model]))
 
-(def conn (db/abre-conexao))
+(def conn (db/abre-conexao!))
 
-(db/cria-schema conn)
+(db/cria-schema! conn)
 
 (def computador (model/novo-produto (model/uuid) "Computador Novo" "/computador-novo" 2500.10M))
 (def celular (model/novo-produto (model/uuid) "Celular Caro" "/celular" 888888.10M))

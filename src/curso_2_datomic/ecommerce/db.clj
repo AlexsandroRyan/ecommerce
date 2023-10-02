@@ -4,17 +4,18 @@
 
 (def db-uri "datomic:dev://localhost:4334/aula1")
 
-(defn abre-conexao 
+(defn abre-conexao!
   []
   (d/create-database db-uri)
   (d/connect db-uri))
 
-(defn apaga-banco
+(defn apaga-banco!
   []
   (d/delete-database db-uri))
 
 (def schema 
-  [{:db/ident       :produto/nome
+  [; Produtos
+   {:db/ident       :produto/nome
     :db/valueType   :db.type/string
     :db/cardinality :db.cardinality/one
     :db/doc         "Nome do produto"}
@@ -32,9 +33,21 @@
    {:db/ident       :produto/id
     :db/valueType   :db.type/uuid
     :db/cardinality :db.cardinality/one
-    :db/unique      :db.unique/identity}])
+    :db/unique      :db.unique/identity}
+   {:db/ident       :produto/categoria
+    :db/valueType   :db.type/ref
+    :db/cardinality :db.cardinality/one}
+   
+   ; Categorias
+   {:db/ident       :categoria/nome
+    :db/valueType   :db.type/string
+    :db/cardinality :db.cardinality/one}
+   {:db/ident :categoria/id
+    :db/valueType :db.type/uuid
+    :db/cardinality :db.cardinality/one
+    :db/unique :db.unique/identity}])
 
-(defn cria-schema 
+(defn cria-schema!
   [conn]
   (d/transact conn schema))
 
@@ -82,3 +95,28 @@
 
 (defn um-produto [db produto-id]
   (d/pull db '[*] [:produto/id produto-id]))
+
+(defn todas-as-categorias [db]
+  (d/q '[:find (pull ?categoria [*])
+         :where [?categoria :categoria/id]] db))
+
+
+(defn db-adds-de-atribuicao-de-categorias 
+  [produtos categoria]
+  (reduce (fn ([db-adds produto] (conj db-adds [:db/add
+                                                [:produto/id (:produto/id produto)]
+                                                :produto/categoria
+                                                [:categoria/id (:categoria/id categoria)]])))
+          []
+          produtos))
+
+(defn atribui-categorias!
+  [conn produtos categoria]
+  (let [a-transacionar (db-adds-de-atribuicao-de-categorias produtos categoria)]
+    (d/transact conn a-transacionar)))
+
+(defn adiciona-produtos! [conn produtos]
+  (d/transact conn produtos))
+
+(defn adiciona-categorias! [conn categorias]
+  (d/transact conn categorias))

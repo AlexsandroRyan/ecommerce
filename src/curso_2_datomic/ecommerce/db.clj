@@ -120,3 +120,27 @@
 
 (defn adiciona-categorias! [conn categorias]
   (d/transact conn categorias))
+
+(defn todos-os-nomes-de-produtos-e-categorias
+  [db]
+  (d/q '[:find ?nome-do-produto ?nome-da-categoria
+         :keys produto categoria
+         :where [?produto :produto/nome ?nome-do-produto]
+                [?produto :produto/categoria ?categoria]
+                [?categoria :categoria/nome ?nome-da-categoria]]
+       db))
+
+;; (defn todos-os-produtos-da-categoria
+;;   [db nome-da-categoria]
+;;   (d/q '[:find (pull ?produto [:produto/nome :produto/slug {:produto/categoria [:categoria/nome]}])
+;;          :in $ ?nome
+;;          :where [?categoria :categoria/nome ?nome]
+;;                 [?produto :produto/categoria ?categoria]]
+;;        db nome-da-categoria))
+
+(defn todos-os-produtos-da-categoria
+  [db nome-da-categoria]
+  (d/q '[:find ?nome (pull ?categoria [:categoria/nome {:produto/_categoria [:produto/nome :produto/slug]}])
+         :in $ ?nome
+         :where [?categoria :categoria/nome ?nome]]
+       db nome-da-categoria))

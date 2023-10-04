@@ -1,4 +1,4 @@
-(ns curso-2-datomic.ecommerce.aula4
+(ns curso-2-datomic.ecommerce.aula5
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [curso-2-datomic.ecommerce.db :as db]
@@ -26,11 +26,23 @@
 (db/atribui-categorias! conn [computador celular celular-barato] eletronicos)
 (db/atribui-categorias! conn [xadrez] esporte)
 
-(def produtos (db/todos-os-produtos (d/db conn)))
-(pprint produtos)
+(pprint @(db/adiciona-produtos! conn [{:produto/nome "Camiseta"
+                                       :produto/slug "/camiseta"
+                                       :produto/preco 30M
+                                       :produto/id (model/uuid)
+                                       :produto/categoria {:categoria/nome "Roupas"
+                                                           :categoria/id (model/uuid)}}]))
+; a categoria ja existe
+(def esporte-id (:categoria/id esporte))
+(pprint @(db/adiciona-produtos! conn [{:produto/nome "Dama"
+                                       :produto/slug "/dama"
+                                       :produto/preco 15M
+                                       :produto/id (model/uuid)
+                                       :produto/categoria [:categoria/id esporte-id]}]))
 
+(pprint (db/todos-os-produtos (d/db conn)))
 (pprint (db/todos-os-nomes-de-produtos-e-categorias (d/db conn)))
-(pprint (db/todos-os-produtos-da-categoria (d/db conn) "Eletrônicos"))
-(pprint (db/todos-os-produtos-da-categoria (d/db conn) "Esporte"))
+(pprint (db/resumo-dos-produtos (d/db conn)))
+(pprint (db/resumo-dos-produtos-por-categoria (d/db conn)))
 
-(db/apaga-banco!)
+;; (db/apaga-banco!)

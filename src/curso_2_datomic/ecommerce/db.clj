@@ -144,3 +144,21 @@
          :in $ ?nome
          :where [?categoria :categoria/nome ?nome]]
        db nome-da-categoria))
+
+(defn resumo-dos-produtos
+  [db]
+  (d/q '[:find (min ?preco) (max ?preco) (count ?preco) (sum ?preco)
+         :keys minimo maximo quantidade preco-total
+         :with ?produto
+         :where [?produto :produto/preco ?preco]]
+       db))
+
+(defn resumo-dos-produtos-por-categoria
+  [db]
+  (d/q '[:find ?nome (min ?preco) (max ?preco) (count ?preco) (sum ?preco)
+         :keys categoria minimo maximo quantidade preco-total
+         :with ?produto
+         :where [?produto :produto/preco ?preco]
+                [?produto :produto/categoria ?categoria]
+                [?categoria :categoria/nome ?nome]]
+       db))
